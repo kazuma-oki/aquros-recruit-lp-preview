@@ -209,7 +209,7 @@ aside nav a.wet>span:last-child>span:not(.sc-interp){background:#fff!important}
     </button>
   </header>
 
-    <div style="position:fixed;top:0;bottom:0;left:50%;width:100%;max-width:{{ centerW }};transform:translateX(-50%);z-index:50;background:rgba(18,40,90,0.35);display:flex;justify-content:flex-end;overflow:hidden;opacity:{{ overlayOpacity }};pointer-events:{{ overlayPE }};transition:opacity .45s ease" onClick="{{ toggleMenu }}">
+    <div style="position:fixed;top:0;bottom:0;left:var(--menu-left,50%);width:100%;max-width:{{ centerW }};transform:var(--menu-tx,translateX(-50%));z-index:50;background:rgba(18,40,90,0.35);display:flex;justify-content:flex-end;overflow:hidden;opacity:{{ overlayOpacity }};pointer-events:{{ overlayPE }};transition:opacity .45s ease" onClick="{{ toggleMenu }}">
       <div style="position:relative;width:100%;height:100%;background:#3d97f2;color:#fff;overflow:hidden;overscroll-behavior:contain;touch-action:none;display:flex;flex-direction:column;padding:64px 0 0;transform:{{ panelX }};transition:transform .6s cubic-bezier(.7,0,.2,1)">
         <!-- 飾りの丸は画面外へのはみ出しをここで切る（はみ出し分がスクロール範囲に入らないように） -->
         <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none">
@@ -251,10 +251,10 @@ aside nav a.wet>span:last-child>span:not(.sc-interp){background:#fff!important}
         <span style="position:relative;display:block;margin:4.1px 0 0 -2px;white-space:nowrap;letter-spacing:-0.3px;color:#1f80ea"><span aria-hidden="true" style="position:absolute;left:1px;top:26px;width:278px;height:14px;background:#cfe6fd;z-index:-1"></span>スタッフ大募集！</span>
       </h1>
       <p style="margin:23.52px 0 0;font-size:15px;line-height:24px;color:#24365f;white-space:nowrap">あなたの技術と結果を評価してくれる環境で<br>一緒に働きませんか？</p>
-      <ul style="margin:26.54px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:5px;font-size:11px;font-weight:700;line-height:normal;color:#12285a">
-        <li style="height:27px;background:#fff;border:2px solid #8cc2f7;border-radius:999px;padding:2.4px 6px 0">業務委託</li>
-        <li style="height:27px;background:#fff;border:2px solid #8cc2f7;border-radius:999px;padding:2.4px 6px 0">完全歩合制（平均月40万円～）</li>
-        <li style="height:27px;background:#fff;border:2px solid #8cc2f7;border-radius:999px;padding:2.4px 6px 0">首都圏近郊</li>
+      <ul style="margin:26.54px 0 0;padding:0;list-style:none;display:flex;flex-wrap:nowrap;gap:5px;width:100%;max-width:339px;font-size:11px;font-weight:700;line-height:normal;color:#12285a">
+        <li style="flex:1 1 auto;height:27px;background:#fff;border:2px solid #8cc2f7;border-radius:999px;padding:2.4px 2px 0;text-align:center;white-space:nowrap">業務委託</li>
+        <li style="flex:1 1 auto;height:27px;background:#fff;border:2px solid #8cc2f7;border-radius:999px;padding:2.4px 2px 0;text-align:center;white-space:nowrap">完全歩合制（平均月40万円～）</li>
+        <li style="flex:1 1 auto;height:27px;background:#fff;border:2px solid #8cc2f7;border-radius:999px;padding:2.4px 2px 0;text-align:center;white-space:nowrap">首都圏近郊</li>
       </ul>
     </div>
     <div style="position:relative;z-index:1;margin:24px 0 -1.227%">
@@ -336,7 +336,7 @@ aside nav a.wet>span:last-child>span:not(.sc-interp){background:#fff!important}
               </div>
               <div style="padding:10.04px 18px 25.14px">
                 <h3 style="margin:0;font-weight:700;font-size:20px;line-height:26px;color:#12285a">{{ b.t1 }}<br><span style="color:#1f80ea">{{ b.t2 }}</span></h3>
-                <p style="margin:13.72px 0 0;font-size:13px;line-height:20px;color:#2a3d68">{{ b.text }}</p>
+                <p style="margin:13.72px 0 0;font-size:13px;line-height:20px;color:#2a3d68;white-space:pre-line">{{ b.text }}</p>
               </div>
             </article>
           </sc-for>
@@ -638,6 +638,11 @@ class Component extends DCLogic {
     this.locked = on;
     // html だけに付ける（html・body は高さが画面分なので、body にも付けると最上部へ戻ってしまう）
     document.documentElement.style.overflow = on ? 'hidden' : '';
+    // メニューは中央の列と同じ位置に置く（スクロールバーが消えて横幅が変わると、画面の中央と列の位置がずれるため）
+    if (on) {
+      const col = document.querySelector('header') && document.querySelector('header').parentElement;
+      if (col) { const r = document.documentElement.style; r.setProperty('--menu-left', col.getBoundingClientRect().left + 'px'); r.setProperty('--menu-tx', 'none'); }
+    }
   }
   componentDidUpdate() {
     this.bindSwipe && this.bindSwipe();
@@ -745,7 +750,7 @@ class Component extends DCLogic {
       ],
       benefits: [
         { num: '01', t1: '自分の', t2: '技術を活かせる', alt: '自分の技術を活かせる', text: 'これまでの水道修理・リフォームの経験を、そのまま現場で活かせます。', img: 'assets/ben1.webp', pos: '50% 50%', phase: 0 },
-        { num: '02', t1: '実績が', t2: '収入に反映される', alt: '実績が収入に反映される', text: '業務委託なので自分の努力次第で月100万円を目指すこともできます（月平均40万円～）。', img: 'assets/ben2.webp', pos: '50% 30%', phase: 1.5 },
+        { num: '02', t1: '実績が', t2: '収入に反映される', alt: '実績が収入に反映される', text: '業務委託なので自分の努力次第で月100万円を目指すこともできます\n（月平均40万円～）。', img: 'assets/ben2.webp', pos: '50% 30%', phase: 1.5 },
         { num: '03', t1: '自分に合った', t2: '働き方を選べる', alt: '自分に合った働き方を選べる', text: '自分のスキルやスタイルに合わせて案件を割り振るため、働きやすい環境です。', img: 'assets/ben3.webp', pos: '50% 40%', phase: 3 },
         { num: '04', t1: '現場に集中できる', t2: '環境', alt: '現場に集中できる環境', text: '案件は会社からご案内するので、現場での対応に集中できます。', img: 'assets/ben4.webp', pos: '45% 55%', phase: 4.5 },
       ].map((b, i) => ({ ...b, scale: i === ci ? 1 : 0.92, op: i === ci ? 1 : 0.6 })),
